@@ -25,7 +25,7 @@ The class Router represents a router in a network and includes methods for sendi
 #### Event processing
 The section 'Event processing' organizes the logic for processing various events such as key exchange, sending messages, transferring data through relays, receiving messages, replying, and handling errors. It leverages a queue-based event processing model to handle events in a sequential and organized manner. This decision to use a queue ensures that events are processed in the order they are received, allowing for a well-structured and predictable flow of operations.
 
-The use of a class Event_node to encapsulate event types and data improves the modularity and readability of the event processing logic. By categorizing different types of events and their associated data, the code becomes easier to understand, maintain, and extend.
+The use of a class `Event_node` to encapsulate event types and data improves the modularity and readability of the event processing logic. By categorizing different types of events and their associated data, the code becomes easier to understand, maintain, and extend.
 
 Additionally, the use of a match statement for event type handling enhances the readability of the code and makes it clear which actions are triggered based on the type of event. This approach makes the code more maintainable and allows for easy addition of new event types in the future.
 
