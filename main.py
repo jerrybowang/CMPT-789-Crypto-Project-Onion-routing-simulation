@@ -198,6 +198,8 @@ def event_processor():
           print(f"{sender.name} start key exchange with {i}")
         sender.key_exchange(i)
         for router in sender.relays[:-1]:
+          if verbose:
+            print(f"{router} start transfering the message")
           IP_lists[router].decrypt()
           IP_lists[router].send()
         if verbose:
@@ -343,3 +345,4 @@ def main():
 
 if __name__ == "__main__":
   main()
+  
