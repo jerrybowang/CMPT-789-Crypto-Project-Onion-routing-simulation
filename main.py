@@ -63,7 +63,7 @@ class Router:
     self.name = name
     self.capacity = capacity
     self.inbox: bytes
-    self.recived_from: str
+    self.received_from: str
     self.send_to: str
     self.key: bytes
     self.buffer: bytes
@@ -72,10 +72,10 @@ class Router:
 
   def send(self):
     IP_lists[self.send_to].inbox = self.buffer
-    IP_lists[self.send_to].recived_from = self.name
+    IP_lists[self.send_to].received_from = self.name
 
   def reply(self):
-    IP_lists[self.recived_from].inbox = self.buffer
+    IP_lists[self.received_from].inbox = self.buffer
 
   def encrypt(self):
     self.f = Fernet(self.key)
@@ -103,10 +103,10 @@ class Person:
   def __init__(self, name:str):
     self.name = name
     self.inbox: bytes
-    self.recived_from: str
+    self.received_from: str
     self.buffer: bytes
     self.f: Fernet  # the encryption module
-    self.recived_msg: str
+    self.received_msg: str
     # 0: guard relay; 1: middle; 2: exit
     self.keys = []
     self.relay_public_keys = []
@@ -128,7 +128,7 @@ class Person:
 
     # sent it to the guard relay
     IP_lists[self.relays[0]].inbox = enc
-    IP_lists[self.relays[0]].recived_from = self.name
+    IP_lists[self.relays[0]].received_from = self.name
 
   def decrypt(self):
     self.f = Fernet(self.keys[0])
@@ -140,10 +140,10 @@ class Person:
       self.buffer = self.f.decrypt(self.buffer)
 
     # decode it
-    self.recived_msg = self.buffer.decode()
+    self.received_msg = self.buffer.decode()
 
   def reply(self, msg: str):
-    IP_lists[self.recived_from].inbox = msg.encode()
+    IP_lists[self.received_from].inbox = msg.encode()
 
   def key_exchange(self, relay: str):
     # append new key
@@ -159,7 +159,7 @@ class Person:
         self.f = Fernet(self.keys[i])
         enc = self.f.encrypt(packets)
     IP_lists[self.relays[0]].inbox = enc
-    IP_lists[self.relays[0]].recived_from = self.name
+    IP_lists[self.relays[0]].received_from = self.name
 
 
 
@@ -179,7 +179,7 @@ def event_processor():
   if event_queue.empty():
     END_signal = True
     return
-  
+
   event_node = event_queue.get()
   match event_node.type:
     case "key_exchange":
@@ -190,7 +190,7 @@ def event_processor():
         print(f"{sender.name} start key exchange with {target_relay}")
       sender.key_exchange(target_relay)
       if verbose:
-        print(f"{sender.name} finished key exchange with {target_relay}")
+        print(f"{sender.name} finished key exchange with {target_relay}\n")
       IP_lists[target_relay].key_exchange()
       # now build the rest of the key exchange
       for i in event_node.data[1:]:
@@ -199,11 +199,11 @@ def event_processor():
         sender.key_exchange(i)
         for router in sender.relays[:-1]:
           if verbose:
-            print(f"{router} start transfering the message")
+            print(f"{router} start transferring the message")
           IP_lists[router].decrypt()
           IP_lists[router].send()
         if verbose:
-          print(f"{sender.name} finished key exchange with {i}")
+          print(f"{sender.name} finished key exchange with {i}\n")
         IP_lists[i].key_exchange()
       print("Key exchange complete\n")
     case "send message":
@@ -215,7 +215,7 @@ def event_processor():
     case "send transfer":
       # check if we already arrived
       if event_node.data == []:
-        event_queue.put(Event_node("recived", []))
+        event_queue.put(Event_node("received", []))
       else:
         # Eve
         number = len(event_node.data)
@@ -226,14 +226,14 @@ def event_processor():
 
         # let the realy transfer the message
         if verbose:
-          print(f"{IP_lists[event_node.data[0]].name} start transfering the message")
+          print(f"{IP_lists[event_node.data[0]].name} start transferring the message")
         IP_lists[event_node.data[0]].decrypt()
         IP_lists[event_node.data[0]].send()
         # schdule the following event
         event_queue.put(Event_node("send transfer", event_node.data[1:]))
-    case "recived":
-      print("Bob recived a message from Alice")
-      print("Bob recived: " + IP_lists["Bob"].inbox.decode())
+    case "received":
+      print("Bob received a message from Alice")
+      print("Bob received: " + IP_lists["Bob"].inbox.decode())
       print("\nBob wants to reply a message to Alice")
       msg = input("Enter the message: ")
       IP_lists["Bob"].reply(msg)
@@ -248,7 +248,7 @@ def event_processor():
       else:
         # let the realy transfer the message
         IP_lists[event_node.data[0]].encrypt()
-        
+
         # Eve
         number = len(event_node.data)
         if Eve_signal[1] and random.randint(0,number) == 0:
@@ -258,14 +258,14 @@ def event_processor():
 
         # let the realy transfer the message
         if verbose:
-          print(f"{IP_lists[event_node.data[0]].name} start transfering the message")
+          print(f"{IP_lists[event_node.data[0]].name} start transferring the message")
         IP_lists[event_node.data[0]].reply()
         # schdule the following event
         event_queue.put(Event_node("send reply", event_node.data[1:]))
     case "replied":
-      print("\nAlice recived a reply from Bob")
+      print("\nAlice received a reply from Bob")
       IP_lists["Alice"].decrypt()
-      print("Alice recived: \n" + IP_lists["Alice"].recived_msg)
+      print("Alice received: \n" + IP_lists["Alice"].received_msg)
     case _:
       print("event_processor: error, undefined type")
       END_signal = True
@@ -325,7 +325,7 @@ def main():
   Bob = Person("Bob")
   IP_lists["Alice"] = Alice
   IP_lists["Bob"] = Bob
-  
+
   # iniatialize signals
   global Eve_signal
   global verbose
@@ -337,12 +337,11 @@ def main():
   global END_signal
   event_queue.put(Event_node("key_exchange",chosen_relay))
   event_queue.put(Event_node("send message",chosen_relay))
-  
+
   while not END_signal:
     event_processor()
-  
+
 
 
 if __name__ == "__main__":
   main()
-  
