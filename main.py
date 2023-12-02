@@ -22,7 +22,7 @@ END_signal = False
 # verbose signal
 verbose = False
 
-# Eve signal: key exchange phase, sending phase, reply phase
+# Eve signal: sending phase, reply phase
 Eve_signal = [False, False]
 
 # helper functions

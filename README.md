@@ -4,6 +4,8 @@ Group member
 - Bo (Jerry) Wang
 - Dahong (David) He
 
+Presentation slides: TBD
+
 ## Development abstract:
 
 In 30 days, our team will be dedicated to the development of a comprehensive Onion routing simulation. The primary objective of this simulation is to emulate the fundamental principles of Onion routing, encompassing relay-based communication and message encryption.
@@ -30,7 +32,7 @@ The use of a class `Event_node` to encapsulate event types and data improves the
 Additionally, the use of a match statement for event type handling enhances the readability of the code and makes it clear which actions are triggered based on the type of event. This approach makes the code more maintainable and allows for easy addition of new event types in the future.
 
 ## Executable
-To run the main.py file, simply execute the file using a Python interpreter.
+To run the main.py file, simply execute the file using a Python interpreter. Make sure that the required dependencies are installed.
 
 Upon executing the main.py file, the user can expect the following behavior:
 
