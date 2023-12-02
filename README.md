@@ -1,8 +1,8 @@
 # CMPT 789 Crypto Project: Onion routing simulation
 
 Group member
-- Bo (Jerry) Wang
-- Dahong (David) He
+- Bo (Jerry) Wang: [@jerrybowang](https://github.com/jerrybowang)
+- Dahong (David) He: [@dhe090](https://github.com/dhe090)
 
 Presentation slides: TBD
 
