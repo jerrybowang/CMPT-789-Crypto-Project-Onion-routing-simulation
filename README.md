@@ -4,7 +4,7 @@ Group member
 - Bo (Jerry) Wang: [@jerrybowang](https://github.com/jerrybowang)
 - Dahong (David) He: [@dhe090](https://github.com/dhe090)
 
-Presentation slides: TBD
+Presentation slides: [Here](https://docs.google.com/presentation/d/1muDHKt8YVSxH8j-A7-r8dOfu93beE1Jk5AtuUaKl4vk/edit?usp=sharing)
 
 ## Development abstract:
 
