@@ -8,17 +8,17 @@ Presentation slides: [Here](https://docs.google.com/presentation/d/1muDHKt8YVSxH
 
 ## Development abstract:
 
-In 30 days, our team will be dedicated to the development of a comprehensive Onion routing simulation. The primary objective of this simulation is to emulate the fundamental principles of Onion routing, encompassing relay-based communication and message encryption.
+In 30 days, our team will be dedicated to the development of an Onion routing simulation. The primary objective of this simulation is to emulate the fundamental principles of Onion routing, encompassing relay-based communication and message encryption.
 
 To accomplish this, we have adopted an object-oriented approach, addressing the modeling challenges of two classes, namely `Person` and `Router`. Leveraging discrete event simulation and event scheduling, we will integrate a cryptographic library to bolster the security aspects of the simulation. Furthermore, we plan to introduce simulation parameters, including the number of relays, potential eavesdropping scenarios, and an option for verbose mode.
 
-Throughout the developmental phase, our focus will be on incremental progress and rigorous testing, ensuring the precision and reliability of our Onion routing simulation.  
+Throughout the developmental phase, we focusd on incremental progress and rigorous testing, ensuring the precision and reliability of our Onion routing simulation.  
 
 ## Implementation decision
 
 #### Person
 
-The class Person represents a person who can send and receive encrypted messages through a network of relays. This class can create and manage encryption keys, send and receive messages, and perform key exchanges with the network relays. It handles the encryption and decryption of messages and manages the process of sending and receiving messages through the relays. The class also contains variables to store the person's name, incoming messages, and encryption keys for communication with the relays. 
+The class Person represents a person who can send and receive encrypted messages through a network of relays. This class can create and manage symmetric encryption keys, send and receive messages, and perform key exchanges with the network relays. It handles the encryption and decryption of messages and manages the process of sending and receiving messages through the relays. The class also contains variables to store the person's name, incoming messages, and encryption keys for communication with the relays. 
 
 #### Router
 The class Router represents a router in a network and includes methods for sending, replying, encrypting, decrypting, key exchange, and obtaining the public key. It also includes attributes for the name, capacity, inbox, received from, send to, encryption key, buffer, and RSA key. The decision to encapsulate these functionalities and attributes within the Router class allows for a modular and organized approach to managing the behavior and state of routers in the network. This makes the code easier to understand, maintain, and extend, and allows for reusable and testable components. Additionally, using a class allows for the instantiation of multiple router objects, each with their own state and behavior, providing a scalable solution for managing the network routers.
