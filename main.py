@@ -84,6 +84,7 @@ class Router:
   def decrypt(self):
     self.f = Fernet(self.key)
     result = self.f.decrypt(self.inbox)
+    
     # if the result contains the splitting_chars
     if b_format(splitting_chars) in result:
       result = result.split(b_format(splitting_chars))
@@ -118,6 +119,7 @@ class Person:
     packets = b_format(recipient) + b_format(splitting_chars) + b_format(message)
     self.f = Fernet(self.keys[-1])
     enc = self.f.encrypt(packets)
+    
     # construct exchange packet
     num_of_relays = len(self.relays)
     if num_of_relays > 1:
@@ -150,6 +152,7 @@ class Person:
     self.keys.append(Fernet.generate_key())
     self.relays.append(relay)
     self.relay_public_keys.append(IP_lists[relay].get_public_key())
+    
     # construct exchange packet
     num_of_relays = len(self.relay_public_keys)
     enc = rsa_enc(self.relay_public_keys[-1], self.keys[-1])
@@ -158,6 +161,7 @@ class Person:
         packets = (self.relays[i + 1] + splitting_chars).encode() + enc
         self.f = Fernet(self.keys[i])
         enc = self.f.encrypt(packets)
+        
     IP_lists[self.relays[0]].inbox = enc
     IP_lists[self.relays[0]].received_from = self.name
 
@@ -192,6 +196,7 @@ def event_processor():
       if verbose:
         print(f"{sender.name} finished key exchange with {target_relay}\n")
       IP_lists[target_relay].key_exchange()
+      
       # now build the rest of the key exchange
       for i in event_node.data[1:]:
         if verbose:
@@ -206,12 +211,14 @@ def event_processor():
           print(f"{sender.name} finished key exchange with {i}\n")
         IP_lists[i].key_exchange()
       print("Key exchange complete\n")
+      
     case "send message":
       print("Alice wants to send a message to Bob")
       msg = input("Enter the message: ")
       IP_lists["Alice"].send(msg, "Bob")
       # schdule following event
       event_queue.put(Event_node("send transfer", event_node.data))
+      
     case "send transfer":
       # check if we already arrived
       if event_node.data == []:
@@ -229,18 +236,22 @@ def event_processor():
           print(f"{IP_lists[event_node.data[0]].name} start transferring the message")
         IP_lists[event_node.data[0]].decrypt()
         IP_lists[event_node.data[0]].send()
+        
         # schdule the following event
         event_queue.put(Event_node("send transfer", event_node.data[1:]))
+        
     case "received":
       print("Bob received a message from Alice")
       print("Bob received: " + IP_lists["Bob"].inbox.decode())
       print("\nBob wants to reply a message to Alice")
       msg = input("Enter the message: ")
       IP_lists["Bob"].reply(msg)
+      
       # schdule the following event
       relays = IP_lists["Alice"].relays.copy()
       relays.reverse()
       event_queue.put(Event_node("send reply", relays))
+      
     case "send reply":
       # check if we already arrived
       if len(event_node.data) == 0:
@@ -260,17 +271,19 @@ def event_processor():
         if verbose:
           print(f"{IP_lists[event_node.data[0]].name} start transferring the message")
         IP_lists[event_node.data[0]].reply()
+        
         # schdule the following event
         event_queue.put(Event_node("send reply", event_node.data[1:]))
+        
     case "replied":
       print("\nAlice received a reply from Bob")
       IP_lists["Alice"].decrypt()
       print("Alice received: \n" + IP_lists["Alice"].received_msg)
+      
     case _:
       print("event_processor: error, undefined type")
       END_signal = True
   return
-
 
 
 
@@ -282,6 +295,7 @@ def main():
   num_of_relays_in_circuit = int(input("Number of relays in a circuit: "))
   eve_enable = input("Enable Eve? (y/n): ").lower()
   verbose_mode = input("Verbose mode? (y/n): ").lower()
+  
   # input validation
   validation_flag = True
   if num_of_relays < 3:
@@ -313,6 +327,7 @@ def main():
   print("The following relays has been created:")
   for i in relay_pool:
     print(f"Relay: {i.name}; capacity: {i.capacity}")
+    
   # choose the relay
   chosen_relay = []
   for i in range(num_of_relays_in_circuit):
@@ -320,6 +335,7 @@ def main():
 
   print("\nThe following relays are chosen for the circuit:")
   print(chosen_relay, "\n")
+  
   # iniatialize Alice and Bob
   Alice = Person("Alice")
   Bob = Person("Bob")
